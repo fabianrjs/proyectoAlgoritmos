@@ -10,15 +10,16 @@ tam = int( sys.argv[ 1 ] )
 
 board = Board( tam )
 
-
-while board.have_won( ):
+#movimientos: numero,direccion. ejemplo 8,a
+#a = arriba
+#d = derecha
+#i = izquierda
+#b = abajo
+while not board.have_won( ):
     print( board )
     move = input( 'Movimiento: ' )
-    #move = player.play( )
-    print( 'Movimiento:', move )
     board.moves( move )
 
 print( board )
-
 print('You Won!')
 
