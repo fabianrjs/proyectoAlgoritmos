@@ -2,7 +2,7 @@ import sys
 from Board import *
 
 if len( sys.argv ) < 2:
-    print( "Uso: python3", sys.argv[ 0 ], "Tamaño" )
+    print( "Usage: python3", sys.argv[ 0 ], "size" )
     sys.exit( 1 )
 
 # end if
@@ -15,7 +15,7 @@ board = Board( tam )
 #d = derecha
 #i = izquierda
 #b = abajo
-print("\nmovimientos: numero,direccion. ejemplo 8,a \na = arriba \nd = derecha\ni = izquierda\nb = abajo ")
+print("\nmovimientos: numero,direccion. ejemplo 8,a \na = arriba \nd = derecha \ni = izquierda \nb = abajo")
 while not board.have_won( ):
     print( board )
     move = input( 'Movimiento: ' )
