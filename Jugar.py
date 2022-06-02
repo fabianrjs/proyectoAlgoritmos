@@ -22,6 +22,7 @@ bot = Bot( board.m_tableroG )
 print("\nMovimientos:\na = arriba \nd = derecha \ni = izquierda \nb = abajo")
 print( board )
 # move = input( 'Movimiento: ' )
+
 for movimiento in bot.jugar( board.m_tablero ):
     board.moves( movimiento )
 

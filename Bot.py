@@ -1,4 +1,5 @@
 import math
+from pprint import pprint
 import numpy as np
 
 from Nodo import Nodo
@@ -12,61 +13,108 @@ class Bot:
 
     def jugar( self, tablero ):
         pila_de_movimientos = []
-        tablero_padre = tablero
+        arbol = Nodo(tablero, None, None, None)
 
-        arbol = Nodo(tablero, None, None)
-
-        while not self.have_won(tablero):
-            
-            movimientos = [ 'a', 'b', 'i', 'd' ]
-            posicionCasillaVacia = np.where( np.array(tablero) == 0 )
-            ( fila, columna ) = ( posicionCasillaVacia[ 0 ], posicionCasillaVacia[ 1 ] )
-            
-            if fila == 0:
-                movimientos.remove('a')
-            if fila == len( tablero ) - 1:
-                movimientos.remove('b')
-            if columna == 0:
-                movimientos.remove('i')
-            if columna == len( tablero ) - 1:
-                movimientos.remove('d')
-
-
-            hijos = []
-            hijos_move = []
-
-            '''print('Tablero ------------')
-            for i in range( len(tablero) ):
-                print( tablero[i] )'''
-
-            for movimiento in movimientos:
-                hijo = self.mover( movimiento, posicionCasillaVacia, np.copy(tablero) )
-                if not np.array_equal(tablero_padre, hijo ):
-                    hijos.append( hijo )
-                    hijos_move.append( movimiento )
-
+        while not self.have_won(arbol.tablero):
+            self.extenderArbol(arbol,2)
+            nodos4nivel = [ ]
+            self.buscarHijos4nivel(arbol,nodos4nivel)
             min_heurstica = math.inf
-            min_movimiento = ''
+            nodoEscogido = None
+            for hijo in nodos4nivel:
+                if hijo.heuristica < min_heurstica:
+                    nodoEscogido = hijo
+            arbol = nodoEscogido
+        
+        #print("----------camino encontrado-------------------------")
+        self.crearPilaDeMovimientos(nodoEscogido,pila_de_movimientos)
+        #for mov in pila_de_movimientos:
+        #    print(mov)
+        pila_de_movimientos.reverse()
+        #print("revertida")
+        #for mov in pila_de_movimientos:
+        #    print(mov)
 
-            for i in range( len( hijos ) ):
-                if self.heuristica( hijos[i] ) < min_heurstica:
-                    tablero_padre = np.copy( tablero )
-                    tablero = hijos[ i ]
-                    min_heurstica = self.heuristica( hijos[i] )
-                    min_movimiento = hijos_move[ i ]
-            
-            print('---------------\n')
-            for i in range( len(tablero) ):
-                print( tablero[i] )
-
-            #input()
-
-            pila_de_movimientos.append( min_movimiento )
-
-            movimientos.clear()
-            hijos.clear()
 
         return pila_de_movimientos
+
+    def extenderArbol(self,nodoActual, nivel):
+        movimientos = [ 'a', 'b', 'i', 'd' ]
+       
+        posicionCasillaVacia = np.where( np.array(nodoActual.tablero) == 0 )
+        ( fila, columna ) = ( posicionCasillaVacia[ 0 ], posicionCasillaVacia[ 1 ] )
+        
+        if fila == 0:
+            movimientos.remove('a')
+        if fila == len( nodoActual.tablero ) - 1:
+            movimientos.remove('b')
+        if columna == 0:
+            movimientos.remove('i')
+        if columna == len( nodoActual.tablero ) - 1:
+            movimientos.remove('d')
+        
+        if nivel == 4:
+            for movimiento in movimientos:
+                hijo = self.mover( movimiento, posicionCasillaVacia, np.copy(nodoActual.tablero) )
+                if self.have_won(hijo):
+                    return "gano"
+                
+                if not np.array_equal(nodoActual.padre.tablero, hijo ):
+                    #print("tablero hijo nivel ", nivel)
+                    #for i in range( len(hijo) ):
+                    #    print( hijo[i] )
+                    nodoArbol = Nodo(hijo,movimiento,nodoActual,self.heuristica(hijo))
+                    #print("heuristica: ", nodoArbol.heuristica)
+                    nodoActual.hijos.append(nodoArbol)
+                
+            
+        else:
+            for movimiento in movimientos:
+                hijo = self.mover( movimiento, posicionCasillaVacia, np.copy(nodoActual.tablero) )
+                if self.have_won(hijo):
+                    return "gano"
+
+                if not nodoActual.padre is None:
+                    if not np.array_equal(nodoActual.padre.tablero, hijo ):
+                        #print("tablero padre")
+                        #for i in range( len(nodoActual.tablero) ):
+                        #    print( nodoActual.tablero[i] )
+                        #
+                        #print("\ntablero hijo nivel ", nivel)
+                        #for i in range( len(hijo) ):
+                        #    print( hijo[i] )
+                        nodoArbol = Nodo(hijo,movimiento,nodoActual,None)
+                        nodoActual.hijos.append(nodoArbol)
+                        self.extenderArbol(nodoArbol,nivel + 1)
+                else:
+                    if not np.array_equal(nodoActual.tablero, hijo ):
+
+                        #print("tablero padre")
+                        #for i in range( len(nodoActual.tablero) ):
+                        #    print( nodoActual.tablero[i] )
+                        #
+                        #print("\ntablero hijo nivel ", nivel)
+                        #for i in range( len(hijo) ):
+                        #    print( hijo[i] )
+                        nodoArbol = Nodo(hijo,movimiento,nodoActual,None)
+                        nodoActual.hijos.append(nodoArbol)
+                        self.extenderArbol(nodoArbol,nivel + 1)
+            
+    def buscarHijos4nivel(self, nodoActual,nodos4nivel):
+        if len(nodoActual.hijos) == 0:
+            nodos4nivel.append(nodoActual)
+        else:
+            for hijo in nodoActual.hijos:
+                self.buscarHijos4nivel(hijo,nodos4nivel)
+
+    def crearPilaDeMovimientos(self,nodoEscogido, pila_de_movimientos):
+        if not nodoEscogido.movimiento is None:
+            #for i in range( len(nodoEscogido.tablero) ):
+            #    print( nodoEscogido.tablero[i] )
+            #print("\n")
+            pila_de_movimientos.append(nodoEscogido.movimiento)
+            self.crearPilaDeMovimientos(nodoEscogido.padre, pila_de_movimientos)
+
 
     def moveDerecha(self, fila, columna, tablero):
         tablero[fila][columna], tablero[fila][columna + 1] = tablero[fila][columna + 1], tablero[fila][columna]

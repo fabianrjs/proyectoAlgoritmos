@@ -1,10 +1,10 @@
 class Nodo:
-    def __init__(self, tablero, movimiento, heuristica) :
+    def __init__(self, tablero, movimiento, padre, heuristica) :
         self.tablero = tablero
         self.movimiento = movimiento
         self.heuristica = heuristica
+        self.padre = padre
+        self.hijos = []
+        self.hijos4nivel = []
 
-        self.hijo1 = None
-        self.hijo2 = None
-        self.hijo3 = None
-        self.hijo4 = None
+    
