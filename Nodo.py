@@ -5,6 +5,5 @@ class Nodo:
         self.heuristica = heuristica
         self.padre = padre
         self.hijos = []
-        self.hijos4nivel = []
 
     

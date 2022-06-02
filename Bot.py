@@ -25,17 +25,11 @@ class Bot:
                 if hijo.heuristica < min_heurstica:
                     nodoEscogido = hijo
             arbol = nodoEscogido
-        
-        #print("----------camino encontrado-------------------------")
+         
         self.crearPilaDeMovimientos(nodoEscogido,pila_de_movimientos)
-        #for mov in pila_de_movimientos:
-        #    print(mov)
+        
         pila_de_movimientos.reverse()
-        #print("revertida")
-        #for mov in pila_de_movimientos:
-        #    print(mov)
-
-
+        
         return pila_de_movimientos
 
     def extenderArbol(self,nodoActual, nivel):
@@ -60,11 +54,8 @@ class Bot:
                     return "gano"
                 
                 if not np.array_equal(nodoActual.padre.tablero, hijo ):
-                    #print("tablero hijo nivel ", nivel)
-                    #for i in range( len(hijo) ):
-                    #    print( hijo[i] )
+    
                     nodoArbol = Nodo(hijo,movimiento,nodoActual,self.heuristica(hijo))
-                    #print("heuristica: ", nodoArbol.heuristica)
                     nodoActual.hijos.append(nodoArbol)
                 
             
@@ -76,26 +67,11 @@ class Bot:
 
                 if not nodoActual.padre is None:
                     if not np.array_equal(nodoActual.padre.tablero, hijo ):
-                        #print("tablero padre")
-                        #for i in range( len(nodoActual.tablero) ):
-                        #    print( nodoActual.tablero[i] )
-                        #
-                        #print("\ntablero hijo nivel ", nivel)
-                        #for i in range( len(hijo) ):
-                        #    print( hijo[i] )
                         nodoArbol = Nodo(hijo,movimiento,nodoActual,None)
                         nodoActual.hijos.append(nodoArbol)
                         self.extenderArbol(nodoArbol,nivel + 1)
                 else:
                     if not np.array_equal(nodoActual.tablero, hijo ):
-
-                        #print("tablero padre")
-                        #for i in range( len(nodoActual.tablero) ):
-                        #    print( nodoActual.tablero[i] )
-                        #
-                        #print("\ntablero hijo nivel ", nivel)
-                        #for i in range( len(hijo) ):
-                        #    print( hijo[i] )
                         nodoArbol = Nodo(hijo,movimiento,nodoActual,None)
                         nodoActual.hijos.append(nodoArbol)
                         self.extenderArbol(nodoArbol,nivel + 1)
@@ -109,9 +85,6 @@ class Bot:
 
     def crearPilaDeMovimientos(self,nodoEscogido, pila_de_movimientos):
         if not nodoEscogido.movimiento is None:
-            #for i in range( len(nodoEscogido.tablero) ):
-            #    print( nodoEscogido.tablero[i] )
-            #print("\n")
             pila_de_movimientos.append(nodoEscogido.movimiento)
             self.crearPilaDeMovimientos(nodoEscogido.padre, pila_de_movimientos)
 
@@ -148,12 +121,9 @@ class Bot:
             posTablero = np.where(tablero == i)
             posTableroG = np.where(tableroG == i)
 
-            #calcular la distancia
-            distFila = abs( int(posTableroG[0]) - int(posTablero[0]))
-            #print("distFila: ", distFila)
+            distFila = abs( int(posTableroG[0]) - int(posTablero[0])) 
             disColumna = abs( int(posTableroG[1]) - int(posTablero[1]))
-            #print("disColumna: ", disColumna)
-            #print("i: ", i, " distancia a su posicion objetivo: " ,distFila + disColumna)
+            
             H += distFila + disColumna
 
         return H
