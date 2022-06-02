@@ -1,5 +1,6 @@
 import sys
 from Board import *
+from Bot import Bot
 
 if len( sys.argv ) < 2:
     print( "Usage: python3", sys.argv[ 0 ], "size" )
@@ -15,11 +16,14 @@ board = Board( tam )
 #d = derecha
 #i = izquierda
 #b = abajo
-print("\nmovimientos: numero,direccion. ejemplo 8,a \na = arriba \nd = derecha \ni = izquierda \nb = abajo")
-while not board.have_won( ):
-    print( board )
-    move = input( 'Movimiento: ' )
-    board.moves( move )
+
+bot = Bot( board.m_tableroG )
+
+print("\nMovimientos:\na = arriba \nd = derecha \ni = izquierda \nb = abajo")
+print( board )
+# move = input( 'Movimiento: ' )
+for movimiento in bot.jugar( board.m_tablero ):
+    board.moves( movimiento )
 
 print( board )
 print('You Won!')

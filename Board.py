@@ -10,13 +10,13 @@ class Board:
 
     def __init__( self, tam):
         self.tam = tam
-        self.m_tablero = [[j+i*tam + 1 for j in range(tam)] for i in range(tam)]
-        self.m_tableroG = [[j+i*tam + 1 for j in range(tam)] for i in range(tam)]
+        self.m_tablero = [ [j+i*tam + 1 for j in range(tam)] for i in range(tam) ]
+        self.m_tableroG = [ [j+i*tam + 1 for j in range(tam)] for i in range(tam) ]
 
         self.m_tablero[tam -1][tam-1] = 0
         self.m_tableroG[tam -1][tam-1] = 0
         for i in range(tam):
-            random.shuffle(self.m_tablero[i])
+            random.shuffle(self.m_tablero[ i ])
         random.shuffle(self.m_tablero)
 
     def __str__(self):
@@ -47,141 +47,50 @@ class Board:
         return s
     
     def have_won( self ):
-        return np.array_equal(self.m_tablero,self.m_tableroG)
+        return np.array_equal(self.m_tablero, self.m_tableroG)
     
-    def moves( self,move):
-        bloqueado = False
-        mov = move.split(",")
-        if int(mov[0]) != 0:
-            tablero = np.array(self.m_tablero)
-            result = np.where(tablero == int(mov[0]))
-            fila = int(result[0])
-            columna = int(result[1])
+    def moves( self, movimiento):
 
-            #esquina superior izquierda
-            if fila == 0 and columna == 0:
-                if mov[1] == "d":
-                    self.moveDerecha(fila,columna)
-                elif mov[1] == "b":
-                    self.moveAbajo(fila,columna)
-                else:
-                    print("movimiento indebido")
+        posicionCasillaVacia = np.where( np.array(self.m_tablero) == 0 )
+        ( fila, columna ) = ( posicionCasillaVacia[ 0 ], posicionCasillaVacia[1] )
 
-            #esquina superior derecha
-            elif fila == 0 and columna == self.tam - 1:
-                if mov[1] == "i":
-                    self.moveIzquierda(fila,columna)
-                elif mov[1] == "b":
-                    self.moveAbajo(fila,columna)
-                else:
-                    print("movimiento indebido")
-            #cualquiera de la esquina de arriba
-            elif fila == 0:
-                if mov[1] == "d":
-                    self.moveDerecha(fila,columna)
-                elif mov[1] == "b":
-                    self.moveAbajo(fila,columna)
-                elif mov[1] == "i":
-                    self.moveIzquierda(fila,columna)
-                else:
-                    print("movimiento indebido")
-            
-            
-            
-            #esquina inferior izquierda
-            elif fila == self.tam - 1 and columna == 0:
-                if mov[1] == "a":
-                    self.moveArriba(fila,columna)
-                elif mov[1] == "d":
-                    self.moveDerecha(fila,columna)
-                else:
-                    print("movimiento indebido")
+        movimientosPosibles = [ 'a', 'b', 'i', 'd']
 
-            #esquina inferior derecha
-            elif fila == self.tam - 1 and columna == self.tam - 1:
-                if mov[1] == "a":
-                    self.moveArriba(fila,columna)
-                elif mov[1] == "i":
-                    self.moveIzquierda(fila,columna)
-                else:
-                    print("movimiento indebido")
+        if fila == 0:
+            movimientosPosibles.remove('a')
+        if fila == self.tam - 1:
+            movimientosPosibles.remove('b')
+        if columna == 0:
+            movimientosPosibles.remove('i')
+        if columna == self.tam - 1:
+            movimientosPosibles.remove('d')
 
-            #Cualquiera de la esquina inferior
-            elif fila == self.tam - 1:
-                if mov[1] == "d":
-                    self.moveDerecha(fila,columna)
-                elif mov[1] == "a":
-                    self.moveArriba(fila,columna)
-                elif mov[1] == "i":
-                    self.moveIzquierda(fila,columna)
-                else:
-                    print("movimiento indebido")
-
-            #Cualquiera de la esquina izquierda
-            elif columna == 0:
-                if mov[1] == "d":
-                    self.moveDerecha(fila,columna)
-                elif mov[1] == "a":
-                    self.moveArriba(fila,columna)
-                elif mov[1] == "b":
-                    self.moveAbajo(fila,columna)
-                else:
-                    print("movimiento indebido")
-
-            #Cualquiera de la esquina derecha
-            elif columna == self.tam - 1:
-                if mov[1] == "i":
-                    self.moveIzquierda(fila,columna)
-                elif mov[1] == "a":
-                    self.moveArriba(fila,columna)
-                elif mov[1] == "b":
-                    self.moveAbajo(fila,columna)
-                else:
-                    print("movimiento indebido")
-
-            else:
-                if mov[1] == "i":
-                    self.moveIzquierda(fila,columna)
-                elif mov[1] == "a":
-                    self.moveArriba(fila,columna)
-                elif mov[1] == "b":
-                    self.moveAbajo(fila,columna)
-                elif mov[1] == "d":
-                    self.moveDerecha(fila,columna)
-                else:
-                    print("movimiento indebido")
-        
+        if movimiento in movimientosPosibles:
+            if movimiento == "i":
+                self.moveIzquierda( int(fila),int(columna) )
+            elif movimiento == "a":
+                self.moveArriba( int(fila),int(columna) )
+            elif movimiento == "b":
+                self.moveAbajo( int(fila),int(columna) )
+            elif movimiento == "d":
+                self.moveDerecha( int(fila),int(columna) )
+            return True
         else:
-            print("movimiento indebido")
-
+            return False
 
     def moveDerecha(self,fila,columna):
-        if self.m_tablero[fila][columna + 1] == 0:
-            print("mover derecha")
-            self.m_tablero[fila][columna], self.m_tablero[fila][columna + 1] = self.m_tablero[fila][columna + 1], self.m_tablero[fila][columna]
-        else:
-            print("espacio no disponible. Ocupado por ",self.m_tablero[fila][columna + 1])
+        print("mover derecha")
+        self.m_tablero[fila][columna], self.m_tablero[fila][columna + 1] = self.m_tablero[fila][columna + 1], self.m_tablero[fila][columna]
     
     def moveAbajo(self,fila,columna):
-        if self.m_tablero[fila + 1][columna] == 0:
-            print("mover abajo")
-            self.m_tablero[fila][columna], self.m_tablero[fila + 1][columna] = self.m_tablero[fila + 1][columna], self.m_tablero[fila][columna]
-        else:
-            print("espacio no disponible. Ocupado por ",self.m_tablero[fila + 1][columna])
-    
+        print("mover abajo")
+        self.m_tablero[fila][columna], self.m_tablero[fila + 1][columna] = self.m_tablero[fila + 1][columna], self.m_tablero[fila][columna]
+        
     def moveIzquierda(self,fila,columna):
-        if self.m_tablero[fila][columna - 1] == 0:
-            print("mover izquierda")
-            self.m_tablero[fila][columna], self.m_tablero[fila][columna - 1] = self.m_tablero[fila][columna - 1], self.m_tablero[fila][columna]
-        else:
-            print("espacio no disponible. Ocupado por ",self.m_tablero[fila][columna - 1])
+        print("mover izquierda")
+        self.m_tablero[fila][columna], self.m_tablero[fila][columna - 1] = self.m_tablero[fila][columna - 1], self.m_tablero[fila][columna]
 
     def moveArriba(self,fila,columna):
-        if self.m_tablero[fila - 1][columna] == 0:
-            print("mover izquierda")
-            self.m_tablero[fila][columna], self.m_tablero[fila - 1][columna] = self.m_tablero[fila - 1][columna], self.m_tablero[fila][columna]
-        else:
-            print("espacio no disponible. Ocupado por ",self.m_tablero[fila - 1][columna])       
-         
-        
+        print("mover Arriba")
+        self.m_tablero[fila][columna], self.m_tablero[fila - 1][columna] = self.m_tablero[fila - 1][columna], self.m_tablero[fila][columna]
                         
